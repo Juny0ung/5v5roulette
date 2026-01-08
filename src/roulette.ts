@@ -356,7 +356,7 @@ export class Roulette extends EventTarget {
 
   public setMarbles(names: string[]) {
     this.reset();
-    const arr = names.slice();
+    const arr = [...names, ...this._teamDicider.getExtraMarbles()];
 
     let maxWeight = -Infinity;
     let minWeight = Infinity;

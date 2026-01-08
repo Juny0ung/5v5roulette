@@ -21,9 +21,17 @@ export class TeamDicider implements UIObject {
     private _winners: string = '';
     private _teamResult: string[] = new Array(10).fill('');
     private _remainders: string[] = [];
+    // lane result for random
+    private _laneResult: number[] = [];
 
     // for render
     private fontHeight = 16;
+
+    private readonly lanes: string[] = ['top', 'jg', 'mid', 'adc', 'sup'];
+
+    constructor() {
+        this.resetTeamResult();
+    }
 
     update(deltaTime: number): void {
         
@@ -96,22 +104,57 @@ export class TeamDicider implements UIObject {
             const groupName = this._groups[laneGroup].getName();
             return groupName.length > 0 ? groupName : `${laneGroup + 1}`;
         }
+
+        const getLaneIndex = (index: number): number => {
+            if (this._laneType !== LaneType.Random) {
+                return index;
+            }
+
+            if (index < this._laneResult.length) {
+                return this._laneResult[index];
+            }
+
+            const used: boolean[] = new Array(5).fill(false);
+            for (const laneResult of this._laneResult) {
+                used[laneResult] = true;
+            }
+            
+            let remainCnt = index - this._laneResult.length;
+            for (let i = 0; i < 5; i++) {
+                if (!used[i]) {
+                    if (remainCnt === 0) {
+                        return i;
+                    }
+                    remainCnt--;
+                } 
+            }
+            
+            return -1;
+        }
+
+        const getLaneText = (laneIndex: number): string => {
+            if (this._laneType !== LaneType.Random || this._laneResult.includes(laneIndex)) {
+                return translateText(this.lanes[laneIndex]);
+            }
+
+            return '--';
+        }
         
         ctx.font = '10pt sans-serif'
         ctx.fillStyle = '#666';
 
-        const lanes = ['top', 'jg', 'mid', 'adc', 'sup'];
         for (let index = 0; index < 5; index++) {
-            const posY = 58 + index * this.fontHeight;
-            const team1 = this._teamResult[index].length > 0 ? this._teamResult[index] : getEmptyMemberStr(index);
-            const team2 = this._teamResult[index + 5].length > 0 ? this._teamResult[index + 5] : getEmptyMemberStr(index);
+            const laneIndex = getLaneIndex(index);
+            const posY = 58 + laneIndex * this.fontHeight;
+            const team1 = this._teamResult[index].length > 0 ? this._teamResult[index] : getEmptyMemberStr(laneIndex);
+            const team2 = this._teamResult[index + 5].length > 0 ? this._teamResult[index + 5] : getEmptyMemberStr(laneIndex);
 
             ctx.fillStyle = getFillStyle(this._teamResult[index]);
             ctx.strokeText(team1, startX - 35, posY);
             ctx.fillText(team1, startX - 35, posY);
 
-            ctx.fillStyle = getFillStyle(lanes[index]);
-            const laneText = translateText(lanes[index]);
+            const laneText = getLaneText(laneIndex);
+            ctx.fillStyle = getFillStyle(laneText);
             ctx.strokeText(laneText, startX, posY);
             ctx.fillText(laneText, startX, posY);
 
@@ -170,6 +213,13 @@ export class TeamDicider implements UIObject {
         } else {
             this._laneType = LaneType.FromTop;
         }
+    }
+
+    public getExtraMarbles(): string[] {
+        if (this._laneType === LaneType.Random) {
+            return this.lanes.map(translateText);
+        }
+        return [];
     }
 
     private getGroupIndex(member: string): number {
@@ -232,6 +282,11 @@ export class TeamDicider implements UIObject {
             case LaneType.FixedLane:
                 this.updateTeamsWithFixedLane(addedWinners);
                 break;
+            case LaneType.Random:
+                this.updateTeamsInRandom(addedWinners);
+                break;
+            default:
+                console.log('invalid lane type');
         }
 
         if (bIsFinished) {
@@ -265,6 +320,7 @@ export class TeamDicider implements UIObject {
         this._winners = '';
         this._teamResult = new Array(10).fill('');
         this._remainders = [];
+        this._laneResult = [];
     }
 
     private updateTeamsFromTop(newMembers: Marble[]) {
@@ -348,5 +404,17 @@ export class TeamDicider implements UIObject {
                 this._remainders.push(newMember.name);
             }
         }
+    }
+
+    private updateTeamsInRandom(newMembers: Marble[]) {
+        const laneTexts = this.lanes.map(translateText);
+        this.updateTeamsFromTop(newMembers.filter((newMember: Marble) => {
+            const laneIndex = laneTexts.indexOf(newMember.name);
+            if (laneIndex >= 0) {
+                this._laneResult.push(laneIndex);
+                return false;
+            }
+            return true;
+        }));
     }
 }
