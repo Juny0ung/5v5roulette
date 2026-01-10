@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5899C1DJM0"></script>
 
-  <title>Marble Roulette</title>
+  <title>5v5 Roulette</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
@@ -26,11 +26,11 @@
   <meta name="msapplication-TileImage" content="assets/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 
-  <meta name="description" content="A lucky draw by dropping marbles, made by lazygyu">
-  <meta property="og:url" content="https://lazygyu.github.io/roulette/">
-  <meta property="og:title" content="Marble Roulette">
-  <meta property="og:description" content="A lucky draw by dropping marbles, made by lazygyu">
-  <meta property="og:site_name" content="lazygyu.github.io">
+  <meta name="description" content="5v5 team divider by dropping marbles, modified from lazygyu">
+  <meta property="og:url" content="https://juny0ung.github.io/5v5roulette/">
+  <meta property="og:title" content="5v5 roulette">
+  <meta property="og:description" content="5v5 team divider by dropping marbles, modified from lazygyu">
+  <meta property="og:site_name" content="juny0ung.github.io">
   <meta property="og:type" content="website">
 
   <link rel='stylesheet' href='assets/style.scss' />
@@ -464,24 +464,6 @@
     const currentNotice = 3;
     const noticeKey = 'lastViewedNotification';
 
-    const closeNotice = () => {
-      document.querySelector('#notice').style.display = 'none';
-      localStorage.setItem(noticeKey, currentNotice.toString());
-    };
-
-    const openNotice = () => {
-      console.log('openNotice');
-      document.querySelector('#notice').style.display = 'flex';
-    };
-
-    document.querySelector('#closeNotice').addEventListener('click', () => {
-      closeNotice();
-    });
-
-    document.querySelector('#btnNotice').addEventListener('click', () => {
-      openNotice();
-    });
-
     function simpleToast(msg) {
       const toast = document.createElement('div');
       toast.classList.add('toast');
@@ -497,16 +479,6 @@
         document.body.removeChild(toast);
       }, 1200);
     }
-
-    const checkNotice = () => {
-      const lastViewed = localStorage.getItem(noticeKey);
-      console.log('lastViewed', lastViewed);
-      if (lastViewed === null || Number(lastViewed) < currentNotice) {
-        openNotice();
-      }
-    };
-
-    checkNotice();
   }
 </script>
 <div id="fixed-lane-settings" class="hide">
@@ -628,18 +600,6 @@
           data-name="bmc-button" data-slug="lazygyu" data-color="#FFDD00" data-emoji=""
           data-font="Comic" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000"
           data-coffee-color="#ffffff"></script>
-</div>
-<div id="notice">
-  <h1>Notice</h1>
-  <div class="notice-body">
-    <h2>마블 룰렛 2025년 결산 페이지 오픈!</h2>
-    <p>👇👇 마블 룰렛의 지난 2025년을 돌아보고 싶다면 클릭!</p>
-    <p><a href='recap_2025.html' class='recap-button holographic'><img src='assets/2025_recap/recap_large.gif' /></a>
-    </p>
-  </div>
-  <div class="notice-action">
-    <button id="closeNotice" data-trans>Close</button>
-  </div>
 </div>
 <div class="copyright">&copy; 2022-2025.<a href="https://lazygyu.net" target="_blank">lazygyu</a> <span data-trans>This program is freeware and may be used freely anywhere, including in broadcasts and videos.</span>
 </div>
