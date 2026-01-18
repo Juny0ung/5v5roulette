@@ -91,6 +91,10 @@ div.copyright a {
   &.lane {
     mask-image: url('images/lane.svg');
   }
+
+  &.speed10x{
+    mask-image: url('images/fastforward.svg');
+  }
 }
 
 #fixed-lane-settings {
@@ -358,6 +362,23 @@ div.copyright a {
       box-sizing: border-box;
       text-align: center;
     }
+  }
+
+  #in_speed {
+    box-sizing: border-box;
+    text-align: center;
+    overflow: hidden;
+    height: 25px;
+    border-radius: 5px;
+    background: #999;
+    border: none;
+    padding: 0;
+    color: #fefefe;
+    margin-left: 7%
+  }
+
+  #in_speed:disabled {
+    color: #c9c9c9;
   }
 }
 

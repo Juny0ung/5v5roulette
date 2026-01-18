@@ -266,6 +266,10 @@
     }
   }
 
+  function setFastForwardSpeed(inSpeed) {
+    window.options.fastForwardSpeed = inSpeed;
+  }
+
   function setLaneType(inLaneType) {
     laneType = inLaneType;
     window.roulette.setLaneType(laneType);
@@ -417,6 +421,20 @@
       });
     });
 
+    document.querySelector('#speed10x').addEventListener('change', (e) => {
+      const v = parseInt(document.querySelector('#in_speed').value, 10);
+      const bIsChecked = e.target.matches(':checked');
+      setFastForwardSpeed((bIsChecked && !isNaN(v)) ? v : 2);
+      document.querySelector('#in_speed').disabled = !bIsChecked;
+    });
+
+    document.querySelector('#in_speed').addEventListener('change', (e) => {
+      const v = parseInt(e.target.value, 10);
+      const rv = Math.min(100, Math.max(2, isNaN(v) ? 2 : v));
+      document.querySelector('#in_speed').value = rv;
+      setFastForwardSpeed(rv);
+    });
+
     window.roulette.addEventListener('goal', () => {
       ready = false;
       setTimeout(() => {
@@ -563,6 +581,14 @@
         <button id="btn-lane-fixed" class="btn-lane" data-trans>Fixed Lane</button>
         <button id="btn-lane-random" class="btn-lane" data-trans>Random</button>
       </div>
+    </div>
+    <div class="row">
+      <label for='speed10x'>
+        <i class="icon speed10x"></i>
+        <span data-trans>10x speed</span>
+      </label>
+      <input type="checkbox" id="speed10x" />
+      <input type="number" id="in_speed" value="10" min="2" max="100" disabled="true" />
     </div>
   </div>
   <div class="left">

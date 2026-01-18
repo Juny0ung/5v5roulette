@@ -1,3 +1,4 @@
+import options from './options';
 import { RenderParameters } from './rouletteRenderer';
 import { Rect } from './types/rect.type';
 import { MouseEventArgs, UIObject } from './UIObject';
@@ -20,7 +21,7 @@ export class FastForwader implements UIObject {
   private isEnabled: boolean = false;
 
   public get speed(): number {
-    return this.isEnabled ? 2 : 1;
+    return this.isEnabled ? Math.max(options.fastForwardSpeed, 2) : 1;
   }
 
   update(deltaTime: number): void {

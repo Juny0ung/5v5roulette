@@ -39,6 +39,7 @@ export const Translations = {
     'sup': 'sup',
     'Any group': 'Choose group',
     'Set group for lane': 'Set group for lane',
+    '10x speed': 'Speed reinforcement',
   },
   ko: {
     'Enter names below': '이름들을 입력하세요',
@@ -79,7 +80,8 @@ export const Translations = {
     'adc': '원딜',
     'sup': '서폿',
     'Any group': '선택하세요',
-    'Set group for lane': '라인의 그룹을 설정하세요'
+    'Set group for lane': '라인의 그룹을 설정하세요',
+    '10x speed': '배속 강화',
   },
 } as const;
 
