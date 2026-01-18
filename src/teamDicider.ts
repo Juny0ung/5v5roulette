@@ -304,7 +304,7 @@ export class TeamDicider implements UIObject {
             this._remainders =  this._remainders.slice(remainderIndex);
         }
 
-        if (this._teamResult.length > 0) {
+        if (false && this._teamResult.length > 0) {
             console.log('team result');
             console.log(this._teamResult.slice(0, 5));
             console.log(this._teamResult.slice(5, 10));
