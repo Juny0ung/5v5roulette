@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TeamDicider } from '../teamdicider';
+import { TeamDicider } from '../teamDicider';
 
 describe('TeamDicider', () => {
     const teamDicider = new TeamDicider();
