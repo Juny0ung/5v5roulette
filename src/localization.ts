@@ -58,12 +58,16 @@ function setLocale(newLocale: string) {
   translatePage();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('localization loaded');
-  const browserLocale = getBrowserLocale();
-  console.log('detected locale: ', browserLocale);
-  setLocale(browserLocale);
-});
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('localization loaded');
+    const browserLocale = getBrowserLocale();
+    console.log('detected locale: ', browserLocale);
+    setLocale(browserLocale);
+  });
+}
 
 // eslint-disable-next-line
-(window as any).translateElement = translateElement;
+if (typeof window !== 'undefined') {
+  (window as any).translateElement = translateElement;
+}
