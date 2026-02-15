@@ -7,8 +7,8 @@ describe('TeamDicider', () => {
     teamDicider.addGroup();
     teamDicider.addGroup();
 
-    teamDicider.setGroupMembers(0, 'a,b,c,d,e,f');
-    teamDicider.setGroupMembers(1, 'g,h,i,j');
+    teamDicider.setGroupMembers(0, '1a,1b,1c,1d,1e,1f');
+    teamDicider.setGroupMembers(1, '2a,2b,2c,2d');
     
     it('Balanced_FromTop', () => {
         teamDicider.setLaneType('fromTop');
@@ -16,32 +16,32 @@ describe('TeamDicider', () => {
         teamDicider.updateTeams([], false);
 
         const winners = [
-            { name: 'a', hue: 0 },
-            { name: 'g', hue: 0 },
-            { name: 'b', hue: 0 },
-            { name: 'd', hue: 0 },
-            { name: 'c', hue: 0 },
-            { name: 'e', hue: 0 },
+            { name: '1a', hue: 0 },
+            { name: '2a', hue: 0 },
+            { name: '1b', hue: 0 },
+            { name: '1d', hue: 0 },
+            { name: '1c', hue: 0 },
+            { name: '1e', hue: 0 },
         ] as any;
 
         teamDicider.updateTeams(winners, false);
 
         const teamResult = (teamDicider as any)._teamResult;
 
-        expect(teamResult[0]).toBe('a');
-        expect(teamResult[1]).toBe('g');
-        expect(teamResult[2]).toBe('b');
-        expect(teamResult[3]).toBe('d');
+        expect(teamResult[0]).toBe('1a');
+        expect(teamResult[1]).toBe('2a');
+        expect(teamResult[2]).toBe('1b');
+        expect(teamResult[3]).toBe('1d');
         expect(teamResult[4]).toBe('');
-        expect(teamResult[5]).toBe('c');
+        expect(teamResult[5]).toBe('1c');
         expect(teamResult[6]).toBe('');
-        expect(teamResult[7]).toBe('e');
+        expect(teamResult[7]).toBe('1e');
         expect(teamResult[8]).toBe('');
         expect(teamResult[9]).toBe('');
     });
 
-    teamDicider.setGroupMembers(0, 'a,b,c,d,e');
-    teamDicider.setGroupMembers(1, 'f,g,h,i,j');
+    teamDicider.setGroupMembers(0, '1a,1b,1c,1d,1e');
+    teamDicider.setGroupMembers(1, '2a,2b,2c,2d,2e');
 
     it('Unbalanced_FromTop_Intermediate', () => {
         teamDicider.setLaneType('fromTop');
@@ -49,14 +49,14 @@ describe('TeamDicider', () => {
         teamDicider.updateTeams([], false);
 
         const winners = [
-            { name: 'a', hue: 0 },
-            { name: 'f', hue: 0 },
-            { name: 'g', hue: 0 },
-            { name: 'b', hue: 0 },
-            { name: 'c', hue: 0 },
-            { name: 'd', hue: 0 },
-            { name: 'h', hue: 0 },
-            { name: 'e', hue: 0 },
+            { name: '1a', hue: 0 },
+            { name: '2a', hue: 0 },
+            { name: '2b', hue: 0 },
+            { name: '1b', hue: 0 },
+            { name: '1c', hue: 0 },
+            { name: '1d', hue: 0 },
+            { name: '2c', hue: 0 },
+            { name: '1e', hue: 0 },
         ] as any;
 
         teamDicider.updateTeams(winners, false);
@@ -64,15 +64,16 @@ describe('TeamDicider', () => {
         const teamResult = (teamDicider as any)._teamResult;
         const remainders = (teamDicider as any)._remainders;
 
-        expect(teamResult[0]).toBe('a');
-        expect(teamResult[1]).toBe('f');
-        expect(teamResult[2]).toBe('g');
-        expect(teamResult[3]).toBe('b');
-        expect(teamResult[4]).toBe('c');
-        expect(teamResult[5]).toBe('d');
-        expect(teamResult[6]).toBe('h');
+        expect(teamResult[0]).toBe('1a');
+        expect(teamResult[1]).toBe('2a');
+        expect(teamResult[2]).toBe('2b');
+        expect(teamResult[3]).toBe('1b');
+        expect(teamResult[4]).toBe('1c');
+
+        expect(teamResult[5]).toBe('1d');
+        expect(teamResult[6]).toBe('2c');
         expect(teamResult[7]).toBe('');
-        expect(teamResult[8]).toBe('e');
+        expect(teamResult[8]).toBe('1e');
         expect(teamResult[9]).toBe('');
 
         expect(remainders.length).toBe(0);
@@ -84,16 +85,16 @@ describe('TeamDicider', () => {
         teamDicider.updateTeams([], false);
 
         const winners = [
-            { name: 'a', hue: 0 },
-            { name: 'f', hue: 0 },
-            { name: 'g', hue: 0 },
-            { name: 'b', hue: 0 },
-            { name: 'c', hue: 0 },
-            { name: 'd', hue: 0 },
-            { name: 'h', hue: 0 },
-            { name: 'e', hue: 0 },
-            { name: 'i', hue: 0 },
-            { name: 'j', hue: 0 },
+            { name: '1a', hue: 0 },
+            { name: '2a', hue: 0 },
+            { name: '2b', hue: 0 },
+            { name: '1b', hue: 0 },
+            { name: '1c', hue: 0 },
+            { name: '1d', hue: 0 },
+            { name: '2c', hue: 0 },
+            { name: '1e', hue: 0 },
+            { name: '2d', hue: 0 },
+            { name: '2e', hue: 0 },
         ] as any;
 
         teamDicider.updateTeams(winners, false);
@@ -101,15 +102,16 @@ describe('TeamDicider', () => {
         const teamResult = (teamDicider as any)._teamResult;
         const remainders = (teamDicider as any)._remainders;
 
-        expect(teamResult[0]).toBe('a');
-        expect(teamResult[1]).toBe('f');
-        expect(teamResult[2]).toBe('g');
-        expect(teamResult[3]).toBe('b');
-        expect(teamResult[4]).toBe('c');
-        expect(teamResult[5]).toBe('d');
-        expect(teamResult[6]).toBe('h');
-        expect(teamResult[7]).toBe('i');
-        expect(teamResult[8]).toBe('e');
+        expect(teamResult[0]).toBe('1a');
+        expect(teamResult[1]).toBe('2a');
+        expect(teamResult[2]).toBe('2b');
+        expect(teamResult[3]).toBe('1b');
+        expect(teamResult[4]).toBe('1c');
+
+        expect(teamResult[5]).toBe('1d');
+        expect(teamResult[6]).toBe('2c');
+        expect(teamResult[7]).toBe('2d');
+        expect(teamResult[8]).toBe('1e');
         expect(teamResult[9]).toBe('');
 
         expect(remainders.length).toBe(1);
@@ -121,16 +123,16 @@ describe('TeamDicider', () => {
         teamDicider.updateTeams([], false);
 
         const winners = [
-            { name: 'a', hue: 0 },
-            { name: 'f', hue: 0 },
-            { name: 'g', hue: 0 },
-            { name: 'b', hue: 0 },
-            { name: 'c', hue: 0 },
-            { name: 'd', hue: 0 },
-            { name: 'h', hue: 0 },
-            { name: 'e', hue: 0 },
-            { name: 'i', hue: 0 },
-            { name: 'j', hue: 0 },
+            { name: '1a', hue: 0 },
+            { name: '2a', hue: 0 },
+            { name: '2b', hue: 0 },
+            { name: '1b', hue: 0 },
+            { name: '1c', hue: 0 },
+            { name: '1d', hue: 0 },
+            { name: '2c', hue: 0 },
+            { name: '1e', hue: 0 },
+            { name: '2d', hue: 0 },
+            { name: '2e', hue: 0 },
         ] as any;
 
         teamDicider.updateTeams(winners, true);
@@ -138,16 +140,17 @@ describe('TeamDicider', () => {
         const teamResult = (teamDicider as any)._teamResult;
         const remainders = (teamDicider as any)._remainders;
 
-        expect(teamResult[0]).toBe('a');
-        expect(teamResult[1]).toBe('f');
-        expect(teamResult[2]).toBe('g');
-        expect(teamResult[3]).toBe('b');
-        expect(teamResult[4]).toBe('c');
-        expect(teamResult[5]).toBe('d');
-        expect(teamResult[6]).toBe('h');
-        expect(teamResult[7]).toBe('i');
-        expect(teamResult[8]).toBe('e');
-        expect(teamResult[9]).toBe('j');
+        expect(teamResult[0]).toBe('1a');
+        expect(teamResult[1]).toBe('2a');
+        expect(teamResult[2]).toBe('2b');
+        expect(teamResult[3]).toBe('1b');
+        expect(teamResult[4]).toBe('1c');
+
+        expect(teamResult[5]).toBe('1d');
+        expect(teamResult[6]).toBe('2c');
+        expect(teamResult[7]).toBe('2d');
+        expect(teamResult[8]).toBe('1e');
+        expect(teamResult[9]).toBe('2e');
 
         expect(remainders.length).toBe(0);
     });

@@ -325,11 +325,13 @@ export class TeamDicider implements UIObject {
 
     private updateTeamsFromTop(newMembers: Marble[]) {
         const membersInTeam1GroupMap = new Map<number, number[]>();
+        let team1Cnt = 0;
         for (let index = 0; index < 5; index++) {
             const memberName = this._teamResult[index];
             if (memberName.length === 0) {
                 continue;
             }
+            team1Cnt++;
 
             const groupIndex = this.getGroupIndex(memberName);
             const membersInTeam1 = membersInTeam1GroupMap.get(groupIndex);
@@ -344,7 +346,8 @@ export class TeamDicider implements UIObject {
             const groupIndex: number = this.getGroupIndex(newMember.name);
             let membersInTeam1 = membersInTeam1GroupMap.get(groupIndex);
             let bIsRemainder = true;
-            if (membersInTeam1 && membersInTeam1.length >= this._groups[groupIndex].getLength() / 2) {
+            if (membersInTeam1 && 
+                (team1Cnt === 5 || membersInTeam1.length >= this._groups[groupIndex].getLength() / 2)) {
                 for (const index of membersInTeam1) {
                     if (this._teamResult[index + 5].length === 0) {
                         this._teamResult[index + 5] = newMember.name;
@@ -356,6 +359,7 @@ export class TeamDicider implements UIObject {
                 for (let index = 0; index < 5; index++) {
                     if (this._teamResult[index].length === 0) {
                         this._teamResult[index] = newMember.name;
+                        team1Cnt++;
                         bIsRemainder = false;
                         if (membersInTeam1) {
                             membersInTeam1.push(index);
