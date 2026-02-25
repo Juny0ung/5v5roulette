@@ -137,6 +137,21 @@ div.copyright a {
   }
 }
 
+#team-settings {
+  position: fixed;
+  bottom: calc(1rem + var(--below-h, 0px) + 0.5rem);
+  left: 1rem;
+  z-index: 999;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s, opacity 1s linear;
+
+  &.hide {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 #settings {
   position: fixed;
   bottom: 1rem;

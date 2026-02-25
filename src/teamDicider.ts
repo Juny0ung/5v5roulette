@@ -4,6 +4,7 @@ import { RenderParameters } from './rouletteRenderer';
 import { Rect } from './types/rect.type';
 import { UIObject } from './UIObject';
 import { translateText } from './localization';
+import { getTeamSettingSnapshot } from './teamsetting/teamsetting';
 
 enum LaneType {
     FromTop = 0,
@@ -242,6 +243,10 @@ export class TeamDicider implements UIObject {
             groupstrs.push(group.getGroupStr());
         }
         return groupstrs.join('/');
+    }
+
+    public getNodeLayout() {
+        return getTeamSettingSnapshot();
     }
 
     public getGroups(): string[] {

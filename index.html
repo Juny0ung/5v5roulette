@@ -369,6 +369,7 @@
       document.querySelector('#fixed-lane-settings').classList.add('hide');
       document.querySelector('#settings').classList.add('hide');
       document.querySelector('#donate').classList.add('hide');
+      document.querySelector('#team-settings').classList.add('hide');
     });
 
     document.querySelector('#chkAutoRecording').addEventListener('change', (e) => {
@@ -443,6 +444,7 @@
         }
         document.querySelector('#settings').classList.remove('hide');
         document.querySelector('#donate').classList.remove('hide');
+        document.querySelector('#team-settings').classList.remove('hide');
       }, 3000);
     });
 
@@ -532,6 +534,7 @@
     <select id="group-sup" class="fixed-lane-group"></select>
   </div>
 </div>
+<div id="team-settings"></div>
 <div id="settings" class="settings">
   <div class="right">
     <div class="row">
