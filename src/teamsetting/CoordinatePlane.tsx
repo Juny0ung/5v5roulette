@@ -10,13 +10,13 @@ const STAGE_HEIGHT = 500;
 const MIN_AREA_SIZE = 20;
 
 const GHOST_COLORS: Record<AreaType, { fill: string; stroke: string }> = {
-  A: { fill: 'rgba(40,160,80,0.25)', stroke: '#28a050' },
-  B: { fill: 'rgba(200,60,60,0.25)', stroke: '#c83c3c' },
+  Balance: { fill: 'rgba(40,160,80,0.25)', stroke: '#28a050' },
+  SameTeam: { fill: 'rgba(200,60,60,0.25)', stroke: '#c83c3c' },
 };
 
 const DEFAULT_NAMES: Record<AreaType, string> = {
-  A: 'Balance',
-  B: 'Same Team',
+  Balance: 'Balance',
+  SameTeam: 'Same Team',
 };
 
 function normalizePendingArea(p: PendingArea): PendingAreaResolved {
@@ -56,7 +56,7 @@ export function CoordinatePlane({
   const t = useTranslate();
   const [stageWidth, setStageWidth] = useState(500);
   const [pendingArea, setPendingArea] = useState<PendingArea | null>(null);
-  const [defaultType, setDefaultType] = useState<AreaType>('A');
+  const [defaultType, setDefaultType] = useState<AreaType>("Balance");
   const [renamingArea, setRenamingArea] = useState<{ id: string; name: string; x: number; y: number } | null>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
@@ -123,7 +123,11 @@ export function CoordinatePlane({
         .filter((a) => a.type === defaultType)
         .some((a) => rectsOverlap(a, resolved));
       if (!conflict) {
-        onAreaAdd({ id: `area-${Date.now()}`, name: DEFAULT_NAMES[defaultType], type: defaultType, ...resolved });
+        if (defaultType === "Balance") {
+          onAreaAdd({ id: `area-${Date.now()}`, name: t(DEFAULT_NAMES[defaultType]), type: defaultType, ...resolved });
+        } else {
+          onAreaAdd({ id: `area-${Date.now()}`, type: defaultType, ...resolved });
+        }
       }
     }
   }
@@ -162,10 +166,10 @@ export function CoordinatePlane({
         display: 'flex', marginBottom: 6,
         background: '#17171f', borderRadius: 8, padding: 3,
       }}>
-        {(['A', 'B'] as AreaType[]).map((type) => {
+        {(["Balance", "SameTeam"] as AreaType[]).map((type) => {
           const active = defaultType === type;
-          const color = type === 'A' ? '#4cdd80' : '#f06060';
-          const label = type === 'A' ? t('Balance') : t('Same Team');
+          const color = type === "Balance" ? '#4cdd80' : '#f06060';
+          const label = type === "Balance" ? t('Balance') : t('Same Team');
           return (
             <button
               key={type}
@@ -219,7 +223,7 @@ export function CoordinatePlane({
                     .some((a) => rectsOverlap(a, c))
                 }
                 onDelete={() => onAreaDelete(area.id)}
-                onRenameRequest={() => handleRenameRequest(area.id, area.name, area.x, area.y)}
+                onRenameRequest={() => handleRenameRequest(area.id, area.name ?? "", area.x, area.y)}
               />
             ))}
             <Transformer

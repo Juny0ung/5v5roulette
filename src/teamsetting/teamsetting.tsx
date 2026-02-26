@@ -44,7 +44,7 @@ function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
       nodes.push({
         id: newId,
         name: names[i],
-        x: COL_X[0], // 전역 또는 외부 변수로 추정됨
+        x: COL_X[0],
         y: yForRow(newId % 5, 5)
       });
     }
@@ -95,7 +95,13 @@ export function TeamSetting() {
   }
 
   function handleAreaChange(id: string, attrs: Partial<Pick<AreaData, 'x' | 'y' | 'width' | 'height' | 'name'>>) {
-    setAreas((prev) => prev.map((a) => (a.id === id ? { ...a, ...attrs } : a)));
+    const newAttrs = { ...attrs };
+  
+    if (newAttrs.name === "") {
+      delete newAttrs.name;
+    }
+    
+    setAreas((prev) => prev.map((a) => (a.id === id ? { ...a, ...newAttrs } : a)));
   }
 
   function handleAreaSelect(id: string | null) {

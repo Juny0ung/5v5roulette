@@ -14,13 +14,13 @@ interface AreaRectProps {
 }
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string }> = {
-  A: { fill: 'rgba(40,160,80,0.35)', stroke: '#28a050' },
-  B: { fill: 'rgba(200,60,60,0.35)', stroke: '#c83c3c' },
+  Balance: { fill: 'rgba(40,160,80,0.1)', stroke: '#28a050' },
+  SameTeam: { fill: 'rgba(200,60,60,0.1)', stroke: '#c83c3c' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  A: 'Balance',
-  B: 'Same Team',
+  Balance: 'Balance',
+  SameTeam: 'Same Team',
 };
 
 export function AreaRect({ area, isSelected, onSelect, onChange, checkOverlap, onDelete, onRenameRequest }: AreaRectProps) {
@@ -73,15 +73,17 @@ export function AreaRect({ area, isSelected, onSelect, onChange, checkOverlap, o
         strokeWidth={isSelected ? 2 : 1}
         cornerRadius={4}
       />
-      <Text
-        x={6}
-        y={6}
-        text={area.name ? `${t(TYPE_LABELS[area.type])}: ${area.name}` : t(TYPE_LABELS[area.type])}
-        fontSize={12}
-        fill="#fff"
-        onClick={(e) => { e.cancelBubble = true; onRenameRequest(); }}
-        onTap={(e) => { e.cancelBubble = true; onRenameRequest(); }}
-      />
+      {!!area.name && (
+        <Text
+          x={6}
+          y={6}
+          text={`${area.name}`}
+          fontSize={12}
+          fill="#fff"
+          onClick={(e) => { e.cancelBubble = true; onRenameRequest(); }}
+          onTap={(e) => { e.cancelBubble = true; onRenameRequest(); }}
+        />
+      )}
       {/* Delete button — top-right corner */}
       <Group
         x={area.width - 10}

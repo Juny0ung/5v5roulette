@@ -12,9 +12,9 @@ interface AreaNameDialogProps {
 
 export function AreaNameDialog({ position, onConfirm, onCancel, externalError, initialType }: AreaNameDialogProps) {
   const t = useTranslate();
-  const defaultName = initialType === 'B' ? 'Same Team' : 'Balance';
+  const defaultName = initialType === "SameTeam" ? 'Same Team' : 'Balance';
   const [name, setName] = useState(defaultName);
-  const type: AreaType = initialType ?? 'A';
+  const type: AreaType = initialType ?? "Balance";
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -27,6 +27,10 @@ export function AreaNameDialog({ position, onConfirm, onCancel, externalError, i
   }, [externalError]);
 
   function handleConfirm() {
+    if (type !== "Balance") {
+      return;
+    }
+    
     const trimmed = name.trim();
     if (!trimmed) {
       setError(t('Name is required'));
