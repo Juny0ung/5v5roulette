@@ -12,3 +12,10 @@ export function rectsOverlap(
 ): boolean {
   return !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y);
 }
+
+export function nodeInside(
+  node: NodeData,
+  area: AreaData
+): boolean {
+  return area.x <= node.x && node.x <= area.x + area.width && area.y <= node.y && node.y <= area.y + area.height;
+}

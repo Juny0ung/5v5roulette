@@ -13,7 +13,7 @@ function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
 
   const yForRow = (i: number, total: number): number => {
     if (total === 1) return Math.round(STAGE_HEIGHT / 2);
-    return Math.round(PADDING + ((i - 1) * (STAGE_HEIGHT - 2 * PADDING)) / (total - 1));
+    return Math.round(PADDING + (i * (STAGE_HEIGHT - 2 * PADDING)) / (total - 1));
   };
 
   const matchedNodes: (NodeData | null)[] = [];
@@ -44,8 +44,8 @@ function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
       nodes.push({
         id: newId,
         name: names[i],
-        x: COL_X[0],
-        y: yForRow(newId % 5, 5)
+        x: COL_X[newId > 5 ? 1 : 0],
+        y: yForRow((newId - 1) % 5, 5)
       });
     }
   }

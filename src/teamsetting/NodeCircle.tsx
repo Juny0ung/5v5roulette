@@ -25,24 +25,11 @@ export function NodeCircle({ node, stageWidth, stageHeight, onMove }: NodeCircle
       }}
     >
       <Circle radius={18} fill="#E8E8E8" stroke="#333" strokeWidth={1.5} />
-      <Text
-        text={String(node.id)}
-        fontSize={13}
-        fontStyle="bold"
-        fill="#333"
-        width={36}
-        height={36}
-        offsetX={18}
-        offsetY={18}
-        align="center"
-        verticalAlign="middle"
-        listening={false}
-      />
       {node.name && (
         <Text
           text={node.name}
           y={22}
-          fontSize={10}
+          fontSize={15}
           fill="#ccc"
           width={70}
           offsetX={35}

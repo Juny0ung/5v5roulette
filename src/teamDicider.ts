@@ -5,6 +5,7 @@ import { Rect } from './types/rect.type';
 import { UIObject } from './UIObject';
 import { translateText } from './localization';
 import { getTeamSettingSnapshot } from './teamsetting/teamsetting';
+import { nodeInside, NodeData, AreaData, AreaType } from './teamsetting/types'
 
 enum LaneType {
     FromTop = 0,
@@ -13,7 +14,14 @@ enum LaneType {
 }
 
 export class TeamDicider implements UIObject {
+    private _members: string[] = [];
+    private _balances: Map<string, number> = new Map<string, number>();
+    private _sameTeams: Map<string, number> = new Map<string, number>();
+
+    // deprecated
     private _groups: MembersGroup[] = [];
+
+    private _meetBalance: boolean = false;
 
     private _laneType: LaneType = LaneType.FromTop;
     // designated lane groups if type is FixedLane. -1 === any group. it can be longer than 5 if each side assigned to different group
@@ -206,6 +214,10 @@ export class TeamDicider implements UIObject {
         this._groups[index].setMembers(members);
     }
 
+    public setMeetBalance(bMeet: boolean) {
+        this._meetBalance = bMeet;
+    }
+
     public setLaneType(laneType: string) {
         if (laneType === 'fixed') {
             this._laneType = LaneType.FixedLane;
@@ -245,10 +257,6 @@ export class TeamDicider implements UIObject {
         return groupstrs.join('/');
     }
 
-    public getNodeLayout() {
-        return getTeamSettingSnapshot();
-    }
-
     public getGroups(): string[] {
         const groups = [];
         for (const group of this._groups) {
@@ -262,6 +270,33 @@ export class TeamDicider implements UIObject {
         let index = 0;
         for (; index < groups.length; index++) {
             this._laneGroups.push(groups[index]);
+        }
+    }
+
+    public updateTeamSetting() {
+        const {nodes, areas} = getTeamSettingSnapshot();
+
+        this._members = [];
+        this._balances = new Map<string, number>();
+        this._sameTeams = new Map<string, number>();
+        for (const node of nodes) {
+            this._members.push(node.name);
+
+            for (let index = 0; index < areas.length; index++) {
+                if (nodeInside(node, areas[index])) {
+                    if (areas[index].type === "Balance") {
+                        this._balances.set(node.name, index);
+                    } else if (areas[index].type === "SameTeam") {
+                        this._sameTeams.set(node.name, index);
+                    }
+                }
+            }
+        }
+
+        if (true) {
+            console.log(this._members);
+            console.log(this._balances);
+            console.log(this._sameTeams);
         }
     }
 

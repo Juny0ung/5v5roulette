@@ -329,6 +329,8 @@ export class Roulette extends EventTarget {
       this.physics.start();
       this._marbles.forEach((marble) => (marble.isActive = true));
     }
+
+    this._teamDicider.updateTeamSetting();
   }
 
   public setSpeed(value: number) {
