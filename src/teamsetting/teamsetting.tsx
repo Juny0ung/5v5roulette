@@ -7,36 +7,60 @@ const STAGE_HEIGHT = 500;
 const COL_X: [number, number] = [100, 260];
 const PADDING = 60;
 
-function buildNodes(names: string[]): NodeData[] {
+function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
   const count = names.length;
   if (count === 0) return [];
 
-  const col1Count = Math.ceil(count / 2);
-  const col2Count = count - col1Count;
-
   const yForRow = (i: number, total: number): number => {
     if (total === 1) return Math.round(STAGE_HEIGHT / 2);
-    return Math.round(PADDING + (i * (STAGE_HEIGHT - 2 * PADDING)) / (total - 1));
+    return Math.round(PADDING + ((i - 1) * (STAGE_HEIGHT - 2 * PADDING)) / (total - 1));
   };
 
+  const matchedNodes: (NodeData | null)[] = [];
+  const usedIds = new Set<number>();
+
+  for (const name of names) {
+    const foundNode = prevNodes?.find((pNode) => pNode.name === name) || null;
+    matchedNodes.push(foundNode);
+    
+    if (foundNode) {
+      usedIds.add(foundNode.id);
+    }
+  }
+
+  const availableIds: number[] = [];
+  for (let i = 1; i <= count; i++) {
+    if (!usedIds.has(i)) {
+      availableIds.push(i);
+    }
+  }
+
   const nodes: NodeData[] = [];
-  for (let i = 0; i < col1Count; i++) {
-    nodes.push({ id: i + 1, name: names[i], x: COL_X[0], y: yForRow(i, col1Count) });
+  for (let i = 0; i < count; i++) {
+    if (matchedNodes[i]) {
+      nodes.push(matchedNodes[i]!);
+    } else {
+      const newId = availableIds.shift()!;
+      nodes.push({
+        id: newId,
+        name: names[i],
+        x: COL_X[0], // 전역 또는 외부 변수로 추정됨
+        y: yForRow(newId % 5, 5)
+      });
+    }
   }
-  for (let i = 0; i < col2Count; i++) {
-    nodes.push({ id: col1Count + i + 1, name: names[col1Count + i], x: COL_X[1], y: yForRow(i, col2Count) });
-  }
+
   return nodes;
 }
 
 // ── Module-level API (survives component re-renders) ──────────────────────────
 
-let _setNodes: ((nodes: NodeData[]) => void) | null = null;
+let _setNodes: React.Dispatch<React.SetStateAction<NodeData[]>> | null = null;
 let _snapshot: { nodes: NodeData[]; areas: AreaData[] } = { nodes: [], areas: [] };
 
 /** Called from window.teamSetting.setNodes — sets node count and names. */
 export function setTeamNodes(names: string[]): void {
-  _setNodes?.(buildNodes(names));
+  _setNodes?.((prevNodes) => buildNodes(names, prevNodes));
 }
 
 /** Called from teamDicider.ts — returns current node positions and area data. */
