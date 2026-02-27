@@ -18,6 +18,7 @@ type TeamResult = {
 };
 
 export class TeamDicider implements UIObject {
+    private _balanceMap: Map<string, number> = new Map();
     private _candidateResults: TeamResult[] = [];
 
     private _meetBalance: boolean = false;
@@ -215,6 +216,7 @@ export class TeamDicider implements UIObject {
                         } else {
                             balances.get(index)?.push(node.name);
                         }
+                        this._balanceMap.set(node.name, index);
                     } else if (areas[index].type === "SameTeam") {
                         if (!sameTeams.has(index)) {
                             sameTeams.set(index, [node.name]);
@@ -231,9 +233,9 @@ export class TeamDicider implements UIObject {
 
     public calculatePossibleResults(members: string[], balances: Map<number, string[]>, sameTeams: Map<number, string[]>) {
         // 빠른 탐색을 위한 이름 -> 레벨 맵핑
-        const levelMap = new Map<string, number>();
+        this._balanceMap = new Map();
         balances.forEach((names, level) => {
-            names.forEach((name) => levelMap.set(name, level));
+            names.forEach((name) => this._balanceMap.set(name, level));
         });
 
         // 1. 10명 중 5명을 뽑는 모든 조합 구하기 (총 252가지)
@@ -330,7 +332,7 @@ export class TeamDicider implements UIObject {
                     // meetBalance가 true일 때만 같은 포지션의 레벨 일치 개수를 계산
                     if (this._meetBalance) {
                         for (let i = 0; i < 5; i++) {
-                            if (levelMap.get(p1[i]) === levelMap.get(p2[i])) {
+                            if (this._balanceMap.get(p1[i]) === this._balanceMap.get(p2[i])) {
                                 score++;
                             }
                         }
@@ -378,18 +380,21 @@ export class TeamDicider implements UIObject {
                 console.log('invalid lane type');
         }
 
-        if (this._candidateResults.length > 0) {
-            this._teamResult = new Array(10).fill('');
-            for (let i = 0; i < 5; i++) {
-                if (winnernames.includes(this._candidateResults[0].team1[i])) {
-                    this._teamResult[i] = this._candidateResults[0].team1[i];
+        if (bIsFinished)
+        {
+            if (this._candidateResults.length > 0) {
+                this._teamResult = new Array(10).fill('');
+                for (let i = 0; i < 5; i++) {
+                    if (winnernames.includes(this._candidateResults[0].team1[i])) {
+                        this._teamResult[i] = this._candidateResults[0].team1[i];
+                    }
+                    if (winnernames.includes(this._candidateResults[0].team2[i])) {
+                        this._teamResult[i + 5] = this._candidateResults[0].team2[i];
+                    }
                 }
-                if (winnernames.includes(this._candidateResults[0].team2[i])) {
-                    this._teamResult[i + 5] = this._candidateResults[0].team2[i];
-                }
+            } else {
+                console.log("no candidates: %s", winnerStr);
             }
-        } else {
-            console.log("no candidates: %s", winnerStr);
         }
     }
 
@@ -408,18 +413,28 @@ export class TeamDicider implements UIObject {
 
         for (const newMember of newMembers) {
             let nextCand: TeamResult[] = [];
-            let ni = 9;
+            let ni = Number.MAX_VALUE;
             for (const cand of this._candidateResults) {
                 let ci = 10;
+                let opn = "";
                 for (let i = 0; i < 5; i++) {
                     if (cand.team1[i] === newMember.name) {
                         ci = i;
+                        opn = this._teamResult[i + 5];
                         break;
-                    }
-
+                    } 
                     if (cand.team2[i] === newMember.name) {
                         ci = i + 5;
+                        opn = this._teamResult[i];
                         break;
+                    }
+                }
+
+                if (opn.length > 0 && this._meetBalance) {
+                    const opBal = this._balanceMap.get(opn) ?? -1;
+                    const nb = this._balanceMap.get(newMember.name) ?? -1;
+                    if ((nb != -1 || opBal != -1) && nb != opBal) {
+                        ci += 10;
                     }
                 }
 
@@ -431,6 +446,7 @@ export class TeamDicider implements UIObject {
                 }
             }
             this._candidateResults = nextCand;
+            this._teamResult[ni % 10] = newMember.name;
         }
     }
 
