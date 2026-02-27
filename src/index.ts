@@ -4,7 +4,7 @@ import options from './options';
 import { registerServiceWorker } from './registerServiceWorker';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { TeamSetting, setTeamNodes } from './teamsetting/teamsetting';
+import { TeamSetting, setTeamNodes, importStr } from './teamsetting/teamsetting';
 
 
 registerServiceWorker();
@@ -18,6 +18,7 @@ if (teamSettingsEl) {
 (window as any).teamSetting = {
   /** setNodes(['Alice', 'Bob', ...]) — updates node count and names on the coordinate plane */
   setNodes: (names: string[]) => setTeamNodes(names),
+  importStr: () => importStr(),
 };
 
 const roulette = new Roulette();

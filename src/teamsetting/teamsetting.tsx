@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NodeData, AreaData } from './types';
 import { CoordinatePlane } from './CoordinatePlane';
 
@@ -56,6 +56,7 @@ function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
 // ── Module-level API (survives component re-renders) ──────────────────────────
 
 let _setNodes: React.Dispatch<React.SetStateAction<NodeData[]>> | null = null;
+let _setAreas: React.Dispatch<React.SetStateAction<AreaData[]>> | null = null;
 let _snapshot: { nodes: NodeData[]; areas: AreaData[] } = { nodes: [], areas: [] };
 
 /** Called from window.teamSetting.setNodes — sets node count and names. */
@@ -68,22 +69,112 @@ export function getTeamSettingSnapshot(): { nodes: NodeData[]; areas: AreaData[]
   return _snapshot;
 }
 
+export function importStr(): string {
+  const localstr = localStorage.getItem('mbr_teamsetting');
+  if (!localstr) return "";
+
+  let nodes: NodeData[] = [];
+  let areas: AreaData[] = [];
+  let nodenames: string = "";
+  const [ nodestr, areastr ] = localstr.split("%$%$", 2);
+  if (nodestr) {
+    nodestr.split("$%$%").forEach((line: string, i: number) => {
+      const strs = line.split(",");
+      
+      const x = parseInt(strs[1]);
+      const y = parseInt(strs[2]);
+      if (isNaN(x) || isNaN(y)) return;
+      
+      nodenames += strs[0] + ',';
+
+      nodes.push({
+        id: i + 1,
+        name: strs[0],
+        x: x,
+        y: y
+      })
+    });
+  }
+
+  if (areastr) {
+    areastr.split("$%$%").forEach((line: string, i: number) => {
+      const strs = line.split(",");
+      
+      const x = parseInt(strs[1]);
+      const y = parseInt(strs[2]);
+      if (isNaN(x) || isNaN(y)) return;
+      
+      const width = parseInt(strs[3]);
+      const height = parseInt(strs[4]);
+      if (isNaN(width) || isNaN(height)) return;
+
+      if (strs[0] === "SameTeam") {
+        areas.push({
+          id: `area-${Date.now()}-${i}`,
+          type: "SameTeam",
+          x: x,
+          y: y,
+          width: width,
+          height: height
+        });
+      } else {
+        areas.push({
+          id: `area-${Date.now()}-${i}`,
+          name: strs[5],
+          type: "Balance",
+          x: x,
+          y: y,
+          width: width,
+          height: height
+        });
+      }
+    });
+  }
+
+  _setNodes?.(nodes);
+  _setAreas?.(areas);
+
+  return nodenames;
+}
+
+function exportStr(): string {
+  let res = "";
+  _snapshot.nodes.forEach((node: NodeData, i: number) => {
+    if (i > 0) res += "$%$%";
+    res += `${node.name},${node.x},${node.y}`;
+  });
+  res += "%$%$"
+  _snapshot.areas.forEach((area: AreaData, i: number) => {
+    if (i > 0) res += "$%$%"
+    res += `${area.type},${area.x},${area.y},${area.width},${area.height}`;
+    if (area.name) res += `,${area.name}`;
+  })
+  return res;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function TeamSetting() {
   const [nodes, setNodes] = useState<NodeData[]>(() => buildNodes(Array.from({ length: 10 }, () => '')));
   const [areas, setAreas] = useState<AreaData[]>([]);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const isMounted = useRef(false);
 
-  // Expose setter for external control
+  // Expose setters for external control
   useEffect(() => {
     _setNodes = setNodes;
-    return () => { _setNodes = null; };
+    _setAreas = setAreas;
+    return () => { _setNodes = null; _setAreas = null; };
   }, []);
 
   // Keep snapshot in sync
   useEffect(() => {
     _snapshot = { nodes, areas };
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    localStorage.setItem('mbr_teamsetting', exportStr());
   }, [nodes, areas]);
 
   function handleNodeMove(id: number, x: number, y: number) {

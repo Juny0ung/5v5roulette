@@ -207,10 +207,7 @@
     if (namesFromUrl) {
       document.querySelector('#in_names').value = namesFromUrl.replace(/,/g, '\n');
     } else {
-      const savedNames = localStorage.getItem('mbr_names');
-      if (savedNames) {
-        document.querySelector('#in_names').value = savedNames;
-      }
+      document.querySelector('#in_names').value = window.teamSetting.importStr();
     }
     document.querySelector('#in_names').addEventListener('input', () => {
       getReady();
