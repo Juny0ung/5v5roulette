@@ -56,6 +56,7 @@ function setLocale(newLocale: string) {
       ? (newLocaleLower as TranslatedLanguages)
       : defaultLocale;
   translatePage();
+  window.dispatchEvent(new CustomEvent('localechange'));
 }
 
 if (typeof document !== 'undefined') {
