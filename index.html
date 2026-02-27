@@ -258,7 +258,6 @@
       window.roulette.start();
       document.querySelector('#fixed-lane-settings').classList.add('hide');
       document.querySelector('#settings').classList.add('hide');
-      document.querySelector('#donate').classList.add('hide');
       document.querySelector('#team-settings').classList.add('hide');
     });
 
@@ -333,13 +332,20 @@
           document.querySelector('#fixed-lane-settings').classList.remove('hide');
         }
         document.querySelector('#settings').classList.remove('hide');
-        document.querySelector('#donate').classList.remove('hide');
         document.querySelector('#team-settings').classList.remove('hide');
       }, 3000);
     });
 
     window.roulette.addEventListener('message', (e) => {
       simpleToast(e.detail);
+    });
+
+    const toggleBtn = document.querySelector('#btnToggleSettings');
+    const collapsible = document.querySelector('.collapsible-rows');
+    toggleBtn.addEventListener('click', () => {
+      collapsible.classList.toggle('collapsed');
+      toggleBtn.querySelector('.toggle-arrow').textContent =
+        collapsible.classList.contains('collapsed') ? '▲' : '▼';
     });
 
     document.querySelector('#btnShuffle').click();
@@ -359,19 +365,19 @@
       window.roulette.setMap(index);
     });
 
-    const checkDonateButtonLoaded = () => {
-      const btn = document.querySelector('span.bmc-btn-text');
-      if (!btn) {
-        setTimeout(checkDonateButtonLoaded, 100);
-      } else {
-        console.log('donation button has been loaded');
-        btn.setAttribute('data-trans', '');
-        window.translateElement(btn);
-      }
-    };
-    setTimeout(checkDonateButtonLoaded, 100);
+    // const checkDonateButtonLoaded = () => {
+    //   const btn = document.querySelector('span.bmc-btn-text');
+    //   if (!btn) {
+    //     setTimeout(checkDonateButtonLoaded, 100);
+    //   } else {
+    //     console.log('donation button has been loaded');
+    //     btn.setAttribute('data-trans', '');
+    //     window.translateElement(btn);
+    //   }
+    // };
+    // setTimeout(checkDonateButtonLoaded, 100);
 
-    const currentNotice = 3;
+    const currentNotice = 5;
     const noticeKey = 'lastViewedNotification';
 
     function simpleToast(msg) {
@@ -427,41 +433,51 @@
 <div id="team-settings"></div>
 <div id="settings" class="settings">
   <div class="right">
-    <div class="row">
-      <label for='sltMap'>
-        <i class="icon map"></i>
-        <span data-trans>Map</span>
-      </label>
-      <select id="sltMap"></select>
-    </div>
-    <div class="row">
-      <label for='chkAutoRecording'>
-        <i class="icon record"></i>
-        <span data-trans>Recording</span>
-      </label>
-      <input type="checkbox" id="chkAutoRecording" />
-    </div>
-    <div class="row">
-      <label>
-        <i class="icon trophy"></i>
-        <span data-trans>The winner is</span>
-      </label>
-      <div class="btn-group">
-        <button class="btn-winner btn-first-winner active" data-trans>First</button>
-        <button class="btn-winner btn-last-winner" data-trans>Last</button>
-        <input type="number" id="in_winningRank" value="1" min="1" />
+    <button id="btnToggleSettings" class="btn-toggle-settings">
+      <span data-trans>Settings</span>
+      <i class="toggle-arrow">▲</i>
+    </button>
+    <div class="collapsible-rows collapsed">
+      <div class="row">
+        <label for='sltMap'>
+          <i class="icon map"></i>
+          <span data-trans>Map</span>
+        </label>
+        <select id="sltMap"></select>
       </div>
-    </div>
-    <div class="row">
-      <label for='chkSkill'>
-        <i class="icon bomb"></i>
-        <span data-trans>Using skills</span>
-      </label>
-      <input type="checkbox" id="chkSkill" checked />
-      <div class='theme'>
-        <i class='icon sun'></i>
-        <input type='checkbox' id='chkDarkMode' checked />
-        <i class='icon moon'></i>
+      <div class="row row-toggles">
+        <div class='toggle-item'>
+          <label for='chkAutoRecording'>
+            <i class="icon record"></i>
+            <span data-trans>Recording</span>
+          </label>
+          <input type="checkbox" id="chkAutoRecording" />
+        </div>
+        <div class='toggle-item'>
+          <label for='chkSkill'>
+            <i class="icon bomb"></i>
+            <span data-trans>Using skills</span>
+          </label>
+          <input type="checkbox" id="chkSkill" checked />
+        </div>
+      </div>
+      <div class="row">
+        <label>
+          <i class="icon trophy"></i>
+          <span data-trans>The winner is</span>
+        </label>
+        <div class="btn-group">
+          <button class="btn-winner btn-first-winner active" data-trans>First</button>
+          <button class="btn-winner btn-last-winner" data-trans>Last</button>
+          <input type="number" id="in_winningRank" value="1" min="1" />
+        </div>
+      </div>
+      <div class="row row-theme">
+        <div class='theme'>
+          <i class='icon sun'></i>
+          <input type='checkbox' id='chkDarkMode' checked />
+          <i class='icon moon'></i>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -486,12 +502,14 @@
   </div>
   <div class="left">
     <h3 data-trans>Enter names below</h3>
-    <div id="names_div"></div>
-    <textarea id="in_names" placeholder="Input names separated by commas or line feed here" data-trans="placeholder">짱구*5, 짱아*10, 봉미선*3</textarea>
+    <textarea id="in_names" placeholder="Input names separated by commas or line feed here" data-trans="placeholder">수박*2,키위*2,귤*2</textarea>
     <div class="actions">
       <button id="btnNotice">
         <i class="icon megaphone"></i>
       </button>
+      <a href='https://marblerouletteshop.com' target='_blank' id="btnShop" class='btn new' title='MarbleRoulette Shop'>
+        <img src='assets/images/marblerouletteshop.png' />
+      </a>
       <div class="sep"></div>
       <button id="btnShuffle">
         <i class="icon shuffle"></i>
@@ -504,13 +522,21 @@
     </div>
   </div>
 </div>
-<div id="donate">
-  <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
-          data-name="bmc-button" data-slug="lazygyu" data-color="#FFDD00" data-emoji=""
-          data-font="Comic" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000"
-          data-coffee-color="#ffffff"></script>
+<div id="notice">
+  <h1>Notice</h1>
+  <div class="notice-body">
+    <h2>커스텀 룰렛 기능 오픈!</h2>
+    <p>나만의 특별한 룰렛을 만들 수 있는 커스텀 룰렛 기능이 오픈했어요!</p>
+    <p>
+      <a href='https://marblerouletteshop.com/intro/roulette' target='_blank' class='shop-button holographic'><img
+        src='assets/images/marblerouletteshop.png' width='125' height='125' /> 룰렛 꾸미러 가기</a>
+    </p>
+  </div>
+  <div class="notice-action">
+    <button id="closeNotice" data-trans>Close</button>
+  </div>
 </div>
-<div class="copyright">&copy; 2022-2025.<a href="https://lazygyu.net" target="_blank">lazygyu</a> <span data-trans>This program is freeware and may be used freely anywhere, including in broadcasts and videos.</span>
+<div class="copyright">&copy; 2022-2026.<a href="https://lazygyu.net" target="_blank">lazygyu</a> <span data-trans>This program is freeware and may be used freely anywhere, including in broadcasts and videos.</span>
 </div>
 </body>
 </html>

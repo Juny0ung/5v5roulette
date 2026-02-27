@@ -1,5 +1,5 @@
 import { Marble } from './marble';
-import { initialZoom, Skills, Themes, zoomThreshold } from './data/constants';
+import { canvasHeight, canvasWidth, initialZoom, Skills, Themes, zoomThreshold } from './data/constants';
 import { ParticleManager } from './particleManager';
 import { StageDef, stages } from './data/maps';
 import { parseName, shuffle } from './utils/utils';
@@ -285,13 +285,26 @@ export class Roulette extends EventTarget {
   }
 
   private attachEvent() {
-    ['MouseMove', 'MouseUp', 'MouseDown', 'DblClick'].forEach(
+    const canvas = this._renderer.canvas;
+    const onPointerRelease = (e: Event) => {
+      this.mouseHandler('MouseUp', e as MouseEvent);
+      window.removeEventListener('pointerup', onPointerRelease);
+      window.removeEventListener('pointercancel', onPointerRelease);
+    };
+
+    canvas.addEventListener('pointerdown', (e: Event) => {
+      this.mouseHandler('MouseDown', e as MouseEvent);
+      window.addEventListener('pointerup', onPointerRelease);
+      window.addEventListener('pointercancel', onPointerRelease);
+    });
+
+    ['MouseMove', 'DblClick'].forEach(
       (ev) => {
         // @ts-ignore
-        this._renderer.canvas.addEventListener(ev.toLowerCase().replace('mouse', 'pointer'), this.mouseHandler.bind(this, ev));
+        canvas.addEventListener(ev.toLowerCase().replace('mouse', 'pointer'), this.mouseHandler.bind(this, ev));
       },
     );
-    this._renderer.canvas.addEventListener('contextmenu', (e) => {
+    canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     });
   }
@@ -406,6 +419,27 @@ export class Roulette extends EventTarget {
       }
     });
     this._totalMarbleCount = totalCount;
+
+    // 카메라를 구슬 생성 위치 중앙으로 이동 + 줌인
+    if (totalCount > 0) {
+      const cols = Math.min(totalCount, 10);
+      const rows = Math.ceil(totalCount / 10);
+      const lineDelta = -Math.max(0, Math.ceil(rows - 5));
+      const centerX = 10.25 + (cols - 1) * 0.3;
+      const centerY = (1 + rows) / 2 + lineDelta;
+
+      const spawnWidth = Math.max((cols - 1) * 0.6, 1);
+      const spawnHeight = Math.max(rows - 1, 1);
+      const margin = 3;
+      const viewW = canvasWidth / initialZoom;
+      const viewH = canvasHeight / initialZoom;
+      const zoom = Math.max(1.5, Math.min(
+        Math.min(viewW / (spawnWidth + margin * 2), viewH / (spawnHeight + margin * 2)),
+        3
+      ));
+
+      this._camera.initializePosition({ x: centerX, y: centerY }, zoom);
+    }
   }
 
   private _clearMap() {
