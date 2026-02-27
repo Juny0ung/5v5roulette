@@ -31,6 +31,8 @@ interface CoordinatePlaneProps {
   nodes: NodeData[];
   areas: AreaData[];
   selectedAreaId: string | null;
+  meetBalance: boolean;
+  onMeetBalanceChange: (value: boolean) => void;
   onNodeMove: (id: number, x: number, y: number) => void;
   onAreaAdd: (area: AreaData) => void;
   onAreaChange: (id: string, attrs: Partial<Pick<AreaData, 'x' | 'y' | 'width' | 'height' | 'name'>>) => void;
@@ -42,6 +44,8 @@ export function CoordinatePlane({
   nodes,
   areas,
   selectedAreaId,
+  meetBalance,
+  onMeetBalanceChange,
   onNodeMove,
   onAreaAdd,
   onAreaChange,
@@ -189,8 +193,9 @@ export function CoordinatePlane({
           );
         })}
       </div>
-      {/* Stage container */}
-      <div ref={containerRef} style={{ position: 'relative', width: '100%', height: STAGE_HEIGHT }}>
+      {/* Stage row: canvas on left, Meet Balance button on right */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+      <div ref={containerRef} style={{ flex: 1, position: 'relative', height: STAGE_HEIGHT }}>
         <Stage
           ref={stageRef}
           width={stageWidth}
@@ -268,6 +273,28 @@ export function CoordinatePlane({
             }}
           />
         )}
+      </div>
+      {/* Meet Balance toggle — right side, outside Stage, rotated 90° */}
+      <button
+        onClick={() => onMeetBalanceChange(!meetBalance)}
+        style={{
+          alignSelf: 'flex-start',
+          writingMode: 'vertical-rl',
+          padding: '10px 5px',
+          borderRadius: 6,
+          border: 'none',
+          background: meetBalance ? 'rgba(76,221,128,0.13)' : 'rgba(255,255,255,0.04)',
+          color: meetBalance ? '#4cdd80' : '#444',
+          fontWeight: meetBalance ? 'bold' : 'normal',
+          fontSize: 12,
+          cursor: 'pointer',
+          boxShadow: meetBalance ? 'inset 0 0 0 1px rgba(76,221,128,0.33)' : 'inset 0 0 0 1px #333',
+          transition: 'all 0.15s',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {t('Meet Balance')}
+      </button>
       </div>
     </div>
   );

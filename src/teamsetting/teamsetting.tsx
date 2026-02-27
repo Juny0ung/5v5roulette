@@ -58,6 +58,11 @@ function buildNodes(names: string[], prevNodes?: NodeData[]): NodeData[] {
 let _setNodes: React.Dispatch<React.SetStateAction<NodeData[]>> | null = null;
 let _setAreas: React.Dispatch<React.SetStateAction<AreaData[]>> | null = null;
 let _snapshot: { nodes: NodeData[]; areas: AreaData[] } = { nodes: [], areas: [] };
+let _meetBalance: boolean = true;
+
+export function getMeetBalance(): boolean {
+  return _meetBalance;
+}
 
 /** Called from window.teamSetting.setNodes — sets node count and names. */
 export function setTeamNodes(names: string[]): void {
@@ -158,6 +163,7 @@ export function TeamSetting() {
   const [nodes, setNodes] = useState<NodeData[]>(() => buildNodes(Array.from({ length: 10 }, () => '')));
   const [areas, setAreas] = useState<AreaData[]>([]);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const [meetBalance, setMeetBalance] = useState<boolean>(true);
   const isMounted = useRef(false);
 
   // Expose setters for external control
@@ -166,6 +172,11 @@ export function TeamSetting() {
     _setAreas = setAreas;
     return () => { _setNodes = null; _setAreas = null; };
   }, []);
+
+  // Sync meetBalance to module-level variable
+  useEffect(() => {
+    _meetBalance = meetBalance;
+  }, [meetBalance]);
 
   // Keep snapshot in sync
   useEffect(() => {
@@ -209,6 +220,8 @@ export function TeamSetting() {
       nodes={nodes}
       areas={areas}
       selectedAreaId={selectedAreaId}
+      meetBalance={meetBalance}
+      onMeetBalanceChange={setMeetBalance}
       onNodeMove={handleNodeMove}
       onAreaAdd={handleAreaAdd}
       onAreaChange={handleAreaChange}

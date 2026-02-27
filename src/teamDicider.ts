@@ -3,7 +3,7 @@ import { RenderParameters } from './rouletteRenderer';
 import { Rect } from './types/rect.type';
 import { UIObject } from './UIObject';
 import { translateText } from './localization';
-import { getTeamSettingSnapshot } from './teamsetting/teamsetting';
+import { getTeamSettingSnapshot, getMeetBalance } from './teamsetting/teamsetting';
 import { nodeInside, NodeData, AreaData, AreaType } from './teamsetting/types'
 
 enum LaneType {
@@ -197,6 +197,8 @@ export class TeamDicider implements UIObject {
     }
 
     public updateTeamSetting() {
+        this.setMeetBalance(getMeetBalance());
+
         const {nodes, areas} = getTeamSettingSnapshot();
 
         let members: string[] = [];
@@ -224,7 +226,10 @@ export class TeamDicider implements UIObject {
             }
         }
 
-        // compute all possible results.
+        this.calculatePossibleResults(members, balances, sameTeams);
+    }
+
+    public calculatePossibleResults(members: string[], balances: Map<number, string[]>, sameTeams: Map<number, string[]>) {
         // 빠른 탐색을 위한 이름 -> 레벨 맵핑
         const levelMap = new Map<string, number>();
         balances.forEach((names, level) => {
@@ -401,8 +406,8 @@ export class TeamDicider implements UIObject {
     private updateTeamsFromTop(newMembers: Marble[]) {
         if (newMembers.length === 0) return;
 
-        let nextCand: TeamResult[] = [];
         for (const newMember of newMembers) {
+            let nextCand: TeamResult[] = [];
             let ni = 9;
             for (const cand of this._candidateResults) {
                 let ci = 10;
@@ -425,8 +430,8 @@ export class TeamDicider implements UIObject {
                     nextCand.push(cand);
                 }
             }
+            this._candidateResults = nextCand;
         }
-        this._candidateResults = nextCand;
     }
 
     private updateTeamsWithFixedLane(newMembers: Marble[]) {
