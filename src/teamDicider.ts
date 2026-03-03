@@ -1,7 +1,8 @@
 import { Marble } from './marble';
 import { RenderParameters } from './rouletteRenderer';
 import { Rect } from './types/rect.type';
-import { UIObject } from './UIObject';
+import { MouseEventArgs, UIObject } from './UIObject';
+import { bound } from './utils/bound.decorator';
 import { translateText } from './localization';
 import { getTeamSettingSnapshot, getMeetBalance } from './teamsetting/teamsetting';
 import { nodeInside, NodeData, AreaData, AreaType } from './teamsetting/types'
@@ -31,6 +32,8 @@ export class TeamDicider implements UIObject {
     private _teamResult: string[] = new Array(10).fill('');
     // lane result for random
     private _laneResult: number[] = [];
+    
+    private messageHandler?: (msg: string) => void;
 
     // for render
     private fontHeight = 16;
@@ -39,6 +42,49 @@ export class TeamDicider implements UIObject {
 
     constructor() {
         this.resetTeamResult();
+    }
+    
+    onMessage(func: (msg: string) => void) {
+        this.messageHandler = func;
+    }
+
+    @bound
+    onDblClick(e?: MouseEventArgs) {
+        if (e) {
+            let bIsFinished = true;
+            const tsv: string[] = new Array(5).fill('');
+            
+            for (let i = 0; i < 5; i++) {
+                let li = i;
+                if (this._laneType === LaneType.Random) {
+                    if (i < this._laneResult.length)
+                    {
+                        bIsFinished = false;
+                        break;
+                    }
+                    li = this._laneResult[i];
+                }
+
+                if (this._teamResult[i].length === 0 || this._teamResult[i + 5].length === 0) {
+                    bIsFinished = false;
+                    break;
+                }
+
+                tsv[li] = translateText(this.lanes[li]) + '\t' + this._teamResult[i] + '\t' + this._teamResult[i + 5]; 
+            }
+
+            if (bIsFinished && navigator.clipboard) {
+                navigator.clipboard.writeText(tsv.join('\n')).then(() => {
+                    if (this.messageHandler) {
+                        this.messageHandler('The result has been copied');
+                    }
+                });
+            } else {
+                if (this.messageHandler) {
+                    this.messageHandler(!bIsFinished ? 'Team not constructed' : 'Cannot copy to clipboard');
+                }
+            }
+        }
     }
 
     update(deltaTime: number): void {

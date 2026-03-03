@@ -28,28 +28,6 @@ export class RankRenderer implements UIObject {
     this._userMoved = 2000;
   }
 
-  @bound
-  onDblClick(e?: MouseEventArgs) {
-    if (e) {
-      if (navigator.clipboard) {
-        const tsv: string[] = [];
-        let rank = 0;
-        tsv.push(...[...this.winners, ...this.marbles].map((m) => {
-          rank++;
-          return [rank.toString(), m.name, rank - 1 === this.winnerRank ? '☆' : ''].join('\t');
-        }));
-
-        tsv.unshift(['Rank', 'Name', 'Winner'].join('\t'));
-
-        navigator.clipboard.writeText(tsv.join('\n')).then(() => {
-          if (this.messageHandler) {
-            this.messageHandler('The result has been copied');
-          }
-        });
-      }
-    }
-  }
-
   onMessage(func: (msg: string) => void) {
     this.messageHandler = func;
   }
